@@ -1,0 +1,86 @@
+name: Build ANTIgram APK
+
+on:
+  push:
+    branches: [ "master", "main" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "master", "main" ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type (debug or standalone)'
+        required: true
+        default: 'debug'
+        type: choice
+        options:
+          - debug
+          - standalone
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r27b
+          add-to-path: true
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: wrapper
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build Debug APK
+        if: "${{ github.event.inputs.build_type != 'standalone' }}"
+        run: |
+          ./gradlew :TMessagesProj_AppStandalone:assembleAfatDebug --stacktrace --no-daemon
+
+      - name: Build Standalone (Release) APK
+        if: "${{ github.event.inputs.build_type == 'standalone' }}"
+        run: |
+          ./gradlew :TMessagesProj_AppStandalone:assembleAfatStandalone --stacktrace --no-daemon
+
+      - name: Organize APK Artifacts
+        run: |
+          mkdir -p output_apk
+          find . -name "*.apk" -type f -exec cp {} output_apk/ \;
+          cd output_apk
+          ls -la
+          for f in *.apk; do
+            mv "$f" "ANTIgram-${f}" 2>/dev/null || true
+          done
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ANTIgram-APK
+          path: output_apk/*.apk
+          retention-days: 14
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: output_apk/*.apk
+          draft: false
+          prerelease: false
+          generate_release_notes: true

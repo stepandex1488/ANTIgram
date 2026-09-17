@@ -20,6 +20,15 @@ public class AntigramConfig {
     public static boolean spamFilterEnabled = false;
     public static String spamFilterKeywords = "crypto,bitcoin,airdrop,giveaway,18+,казино,ставки,заработок";
 
+    // iOS Style Configuration
+    public static boolean iosStyleEnabled = true;
+    public static boolean iosTabBarFullWidth = true;
+    public static boolean iosBlur = true;
+    public static boolean iosSpringAnimations = true;
+    public static boolean iosHaptics = true;
+    public static boolean iosCupertinoSwitch = true;
+    public static boolean iosBubbles = true;
+
     private static boolean configLoaded = false;
 
     public static void loadConfig() {
@@ -37,6 +46,15 @@ public class AntigramConfig {
         aiApiKey = preferences.getString("aiApiKey", "");
         spamFilterEnabled = preferences.getBoolean("spamFilterEnabled", false);
         spamFilterKeywords = preferences.getString("spamFilterKeywords", "crypto,bitcoin,airdrop,giveaway,18+,казино,ставки,заработок");
+
+        // Load iOS options
+        iosStyleEnabled = preferences.getBoolean("iosStyleEnabled", true);
+        iosTabBarFullWidth = preferences.getBoolean("iosTabBarFullWidth", true);
+        iosBlur = preferences.getBoolean("iosBlur", true);
+        iosSpringAnimations = preferences.getBoolean("iosSpringAnimations", true);
+        iosHaptics = preferences.getBoolean("iosHaptics", true);
+        iosCupertinoSwitch = preferences.getBoolean("iosCupertinoSwitch", true);
+        iosBubbles = preferences.getBoolean("iosBubbles", true);
         configLoaded = true;
     }
 
@@ -73,6 +91,41 @@ public class AntigramConfig {
     public static void setSpamFilterKeywords(String keywords) {
         spamFilterKeywords = keywords != null ? keywords : "";
         getPreferences().edit().putString("spamFilterKeywords", spamFilterKeywords).apply();
+    }
+
+    public static void setIosStyleEnabled(boolean value) {
+        iosStyleEnabled = value;
+        getPreferences().edit().putBoolean("iosStyleEnabled", value).apply();
+    }
+
+    public static void setIosTabBarFullWidth(boolean value) {
+        iosTabBarFullWidth = value;
+        getPreferences().edit().putBoolean("iosTabBarFullWidth", value).apply();
+    }
+
+    public static void setIosBlur(boolean value) {
+        iosBlur = value;
+        getPreferences().edit().putBoolean("iosBlur", value).apply();
+    }
+
+    public static void setIosSpringAnimations(boolean value) {
+        iosSpringAnimations = value;
+        getPreferences().edit().putBoolean("iosSpringAnimations", value).apply();
+    }
+
+    public static void setIosHaptics(boolean value) {
+        iosHaptics = value;
+        getPreferences().edit().putBoolean("iosHaptics", value).apply();
+    }
+
+    public static void setIosCupertinoSwitch(boolean value) {
+        iosCupertinoSwitch = value;
+        getPreferences().edit().putBoolean("iosCupertinoSwitch", value).apply();
+    }
+
+    public static void setIosBubbles(boolean value) {
+        iosBubbles = value;
+        getPreferences().edit().putBoolean("iosBubbles", value).apply();
     }
 
     public static boolean isSpamMessage(String text) {
